@@ -1,0 +1,141 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "News Tool",
+    "version": "1.0.0",
+    "description": "Search news articles via NewsAPI.org. Supports keyword search, date range, and sorting. API key required via connection.",
+    "x-ibm-skill-name": "News Tool",
+    "x-ibm-skill-id": "news-tool-v1"
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "apiKey"
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://newsapi.org"
+    }
+  ],
+  "paths": {
+    "/v2/everything": {
+      "get": {
+        "operationId": "searchEverything",
+        "summary": "News Tool",
+        "description": "Search through millions of articles from news sources. Use query (q) for keywords, from/to for date range, sortBy for relevancy/popularity/publishedAt.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Keywords or phrases to search (e.g. tesla, bitcoin)",
+            "schema": {
+              "type": "string",
+              "default": "tesla"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "Start date (ISO 8601, e.g. 2026-01-26)",
+            "schema": {
+              "type": "string",
+              "default": "2026-01-26"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "description": "Sort order: relevancy, popularity, publishedAt",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "relevancy",
+                "popularity",
+                "publishedAt"
+              ],
+              "default": "publishedAt"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "description": "Results per page (max 100)",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "apiKey",
+            "in": "query",
+            "required": false,
+            "description": "API key (use connection or provide here)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of articles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "totalResults": {
+                      "type": "integer"
+                    },
+                    "articles": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "object"
+                          },
+                          "author": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string"
+                          },
+                          "publishedAt": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": null
+}

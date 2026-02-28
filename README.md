@@ -4,6 +4,8 @@
 
 *Author: Markus van Kempen · 27 Feb 2026*
 
+**Repository:** [github.com/markusvankempen/wxo-toolkit-vsc](https://github.com/markusvankempen/wxo-toolkit-vsc)
+
 Export, import, compare, and replicate Watson Orchestrate agents, tools, flows, and connections via the orchestrate CLI from VS Code. Uses wxo-toolkit-cli scripts bundled with the extension. Standalone extension (independent of wxo-builder).
 
 ## Features
@@ -32,17 +34,22 @@ Export, import, compare, and replicate Watson Orchestrate agents, tools, flows, 
 ## Install from source
 
 ```bash
-cd watsonx-orchestrate-devkit/packages/wxo-toolkit/vscode-extension
+# Clone the repo (or use existing checkout)
+git clone https://github.com/markusvankempen/wxo-toolkit-vsc.git
+cd wxo-toolkit-vsc
+
 npm install
 npm run compile
 ```
 
 Then in VS Code: **Run and Debug** → **Run Extension** (F5).
 
+*When developing within the watson-orchestrate-builder monorepo, use `watsonx-orchestrate-devkit/packages/wxo-toolkit/vscode-extension` as the working directory.*
+
 ## Package for publishing
 
 ```bash
-cd watsonx-orchestrate-devkit/packages/wxo-toolkit/vscode-extension
+cd wxo-toolkit-vsc   # or watsonx-orchestrate-devkit/packages/wxo-toolkit/vscode-extension
 npm run package
 ```
 
@@ -50,10 +57,41 @@ Produces `wxo-toolkit-vsc-1.0.0.vsix`. Install via **Extensions** → "..." → 
 
 See `PUBLISHING.md` for publishing to VS Code Marketplace and Open VSX.
 
+### Files included in the VSIX
+
+| File | Purpose |
+|------|---------|
+| `package.json` | Extension manifest |
+| `dist/extension.js` | Bundled extension (esbuild) |
+| `resources/*` | Icons, webview assets |
+| `USER_GUIDE.md` | Full user guide (Help tab, Command Palette) |
+| `SETUP.md` | Setup flow diagrams and detailed guide |
+| `README.md` | Marketplace listing |
+
+## Quick setup
+
+1. **Add environment** — Open Panel → Systems tab → Add Environment (Name, URL, API Key)
+2. Credentials are stored securely and synced to the orchestrate CLI
+3. Export, Import, Compare, and Create Tool work immediately
+
+See [SETUP.md](SETUP.md) for flow diagrams and a detailed guide.
+
+## Using orchestrate in a Python venv
+
+If you install the orchestrate CLI inside a Python virtual environment (e.g. `pip install ibm-watsonx-orchestrate` inside a venv), the extension needs to know where it is:
+
+1. **Settings** → search `orchestrateVenvPath` (or **WxO Toolkit**)
+2. Set **Orchestrate Venv Path** to your venv folder:
+   - Workspace-relative: `.venv` or `venv` (if the venv is in your workspace root)
+   - Absolute: `/path/to/your/venv`
+
+The extension prepends `venv/bin` to `PATH` for all CLI operations. If you don't set this, Export/Import/Compare may fail with "orchestrate: command not found".
+
 ## Settings
 
 | Setting | Description |
 |---------|-------------|
 | `wxo-toolkit-vsc.scriptsPath` | Path to wxo-toolkit-cli scripts folder. Leave empty to use bundled scripts. |
 | `wxo-toolkit-vsc.wxoRoot` | WxO Project Dir (default: `{workspaceRoot}/WxO`) |
+| `wxo-toolkit-vsc.orchestrateVenvPath` | Path to Python venv where orchestrate CLI is installed (e.g. `.venv`). **Required when orchestrate is in a venv** — see above. |
 | `wxo-toolkit-vsc.debugPanel` | Write panel HTML to `.vscode/wxo-panel-debug.html` for debugging |

@@ -1,0 +1,98 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "FerryWeather",
+    "version": "1.0.0",
+    "description": "Weather, tides, moon phases, sunrise/sunset, air quality, and weather alerts from FerryLight weather station. Uses basic authentication.",
+    "x-ibm-skill-name": "FerryWeather",
+    "x-ibm-skill-id": "ferry-weather-v1"
+  },
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "Basic auth: username and password required"
+      }
+    }
+  },
+  "security": [
+    {
+      "basicAuth": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://nodered.ferrylight.online"
+    }
+  ],
+  "paths": {
+    "/rbweather": {
+      "get": {
+        "operationId": "getFerryWeather",
+        "summary": "FerryWeather",
+        "description": "Get comprehensive weather data: temperature, humidity, wind, solar radiation, UV, rain, soil moisture, tides, weather forecast, moon phases, sunrise/sunset, air quality (faqhi, diyaqhi), and weather alerts.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Weather station data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tempf": {
+                      "type": "string",
+                      "description": "Outdoor temp °F"
+                    },
+                    "humidity": {
+                      "type": "string"
+                    },
+                    "windspeedmph": {
+                      "type": "string"
+                    },
+                    "windgustmph": {
+                      "type": "string"
+                    },
+                    "solarradiation": {
+                      "type": "string"
+                    },
+                    "uv": {
+                      "type": "string"
+                    },
+                    "tides": {
+                      "type": "array"
+                    },
+                    "weatherforecast": {
+                      "type": "object"
+                    },
+                    "moonphases": {
+                      "type": "object"
+                    },
+                    "sunriseset": {
+                      "type": "object"
+                    },
+                    "faqhi": {
+                      "type": "object",
+                      "description": "Air quality index"
+                    },
+                    "diyaqhi": {
+                      "type": "object"
+                    },
+                    "weatheralerts": {
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": null
+}

@@ -1,0 +1,413 @@
+{
+  "spec": {
+    "kind": "flow",
+    "name": "name_address_form_flow",
+    "description": "Collects user name first, then address via sequential forms.",
+    "schedulable": false,
+    "display_name": "Name & Address Form",
+    "input_schema": {
+      "$ref": "#/schemas/FlowInput"
+    },
+    "output_schema": {
+      "$ref": "#/schemas/NameAndAddressOutput"
+    }
+  },
+  "edges": [
+    {
+      "end": "NameAndAddressCollector",
+      "start": "__start__"
+    },
+    {
+      "end": "__end__",
+      "start": "NameAndAddressCollector"
+    }
+  ],
+  "nodes": {
+    "__end__": {
+      "spec": {
+        "kind": "end",
+        "name": "__end__",
+        "display_name": "__end__"
+      }
+    },
+    "__start__": {
+      "spec": {
+        "kind": "start",
+        "name": "__start__",
+        "display_name": "__start__"
+      }
+    },
+    "NameAndAddressCollector": {
+      "spec": {
+        "kind": "user_flow",
+        "name": "NameAndAddressCollector",
+        "owners": [
+          "__any_user__"
+        ],
+        "initiators": [
+          "__any_user__"
+        ],
+        "schedulable": false,
+        "display_name": "Collect Name and Address",
+        "output_schema": {
+          "$ref": "#/schemas/NameAndAddressOutput"
+        }
+      },
+      "edges": [
+        {
+          "end": "NameForm",
+          "start": "__start__"
+        },
+        {
+          "end": "AddressForm",
+          "start": "NameForm"
+        },
+        {
+          "end": "__end__",
+          "start": "AddressForm"
+        }
+      ],
+      "nodes": {
+        "__end__": {
+          "spec": {
+            "kind": "end",
+            "name": "__end__",
+            "display_name": "__end__"
+          }
+        },
+        "NameForm": {
+          "spec": {
+            "form": {
+              "kind": "form",
+              "name": "NameForm",
+              "fields": [
+                {
+                  "kind": "text",
+                  "name": "name",
+                  "uiSchema": {
+                    "ui:title": "Full Name",
+                    "ui:widget": "TextWidget"
+                  },
+                  "direction": "input",
+                  "display_name": "Full Name",
+                  "input_schema": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                      "default": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "output_schema": {
+                    "type": "object",
+                    "required": [
+                      "value"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              ],
+              "buttons": [
+                {
+                  "kind": "submit",
+                  "name": "submit",
+                  "visible": true,
+                  "display_name": "Submit"
+                },
+                {
+                  "kind": "cancel",
+                  "name": "cancel",
+                  "visible": true,
+                  "display_name": "Cancel"
+                }
+              ],
+              "jsonSchema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "title": "Full Name"
+                  }
+                }
+              },
+              "display_name": "Your Name",
+              "instructions": "Please enter your full name."
+            },
+            "kind": "user",
+            "name": "NameForm",
+            "fields": [],
+            "owners": [
+              "__current_user__"
+            ],
+            "description": "Please enter your name.",
+            "display_name": "Name Form"
+          }
+        },
+        "__start__": {
+          "spec": {
+            "kind": "start",
+            "name": "__start__",
+            "display_name": "__start__"
+          }
+        },
+        "AddressForm": {
+          "spec": {
+            "form": {
+              "kind": "form",
+              "name": "AddressForm",
+              "fields": [
+                {
+                  "kind": "text",
+                  "name": "street",
+                  "uiSchema": {
+                    "ui:title": "Street",
+                    "ui:widget": "TextWidget"
+                  },
+                  "direction": "input",
+                  "display_name": "Street",
+                  "input_schema": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                      "default": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "output_schema": {
+                    "type": "object",
+                    "required": [
+                      "value"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                {
+                  "kind": "text",
+                  "name": "city",
+                  "uiSchema": {
+                    "ui:title": "City",
+                    "ui:widget": "TextWidget"
+                  },
+                  "direction": "input",
+                  "display_name": "City",
+                  "input_schema": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                      "default": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "output_schema": {
+                    "type": "object",
+                    "required": [
+                      "value"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                {
+                  "kind": "text",
+                  "name": "state",
+                  "uiSchema": {
+                    "ui:title": "State / Province",
+                    "ui:widget": "TextWidget"
+                  },
+                  "direction": "input",
+                  "display_name": "State / Province",
+                  "input_schema": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                      "default": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "output_schema": {
+                    "type": "object",
+                    "required": [
+                      "value"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                {
+                  "kind": "text",
+                  "name": "zip_code",
+                  "uiSchema": {
+                    "ui:title": "ZIP / Postal Code",
+                    "ui:widget": "TextWidget"
+                  },
+                  "direction": "input",
+                  "display_name": "ZIP / Postal Code",
+                  "input_schema": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                      "default": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "output_schema": {
+                    "type": "object",
+                    "required": [
+                      "value"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                {
+                  "kind": "text",
+                  "name": "country",
+                  "uiSchema": {
+                    "ui:title": "Country",
+                    "ui:widget": "TextWidget"
+                  },
+                  "direction": "input",
+                  "display_name": "Country",
+                  "input_schema": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                      "default": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "output_schema": {
+                    "type": "object",
+                    "required": [
+                      "value"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              ],
+              "buttons": [
+                {
+                  "kind": "submit",
+                  "name": "submit",
+                  "visible": true,
+                  "display_name": "Submit"
+                },
+                {
+                  "kind": "cancel",
+                  "name": "cancel",
+                  "visible": true,
+                  "display_name": "Cancel"
+                }
+              ],
+              "jsonSchema": {
+                "type": "object",
+                "required": [
+                  "street",
+                  "city",
+                  "country"
+                ],
+                "properties": {
+                  "city": {
+                    "type": "string",
+                    "title": "City"
+                  },
+                  "state": {
+                    "type": "string",
+                    "title": "State / Province"
+                  },
+                  "street": {
+                    "type": "string",
+                    "title": "Street"
+                  },
+                  "country": {
+                    "type": "string",
+                    "title": "Country"
+                  },
+                  "zip_code": {
+                    "type": "string",
+                    "title": "ZIP / Postal Code"
+                  }
+                }
+              },
+              "display_name": "Address",
+              "instructions": "Please fill out your address."
+            },
+            "kind": "user",
+            "name": "AddressForm",
+            "fields": [],
+            "owners": [
+              "__current_user__"
+            ],
+            "description": "Please enter your address.",
+            "display_name": "Address Form"
+          }
+        }
+      },
+      "schemas": {},
+      "metadata": {}
+    }
+  },
+  "schemas": {
+    "FlowInput": {
+      "type": "object",
+      "required": [],
+      "properties": {}
+    },
+    "NameAndAddressOutput": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "street": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "zip_code": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "metadata": {
+    "llm_model": "groq/openai/gpt-oss-120b"
+  }
+}

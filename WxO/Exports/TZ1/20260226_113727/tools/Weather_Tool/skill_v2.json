@@ -1,0 +1,106 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Weather Tool v2",
+    "version": "1.0.0",
+    "description": "Get current weather for a location. Uses WeatherAPI.com. Optionally assign a connection for the API key at creation.",
+    "x-ibm-skill-name": "Weather Tool v2",
+    "x-ibm-skill-id": "weather-tool-v2"
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "key"
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.weatherapi.com/v1"
+    }
+  ],
+  "paths": {
+    "/current.json": {
+      "get": {
+        "operationId": "getCurrentWeatherv2",
+        "summary": "Weather Tool",
+        "description": "Get current weather for a city or location (e.g. Toronto,On). API key required via connection or key param.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "City name or lat,lon (e.g. Toronto,On or 43.65,-79.38)",
+            "schema": {
+              "type": "string",
+              "default": "Toronto,On"
+            }
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "required": false,
+            "description": "API key 34ccd3dc1987458b9d050532261802",
+            "schema": {
+              "type": "string",
+              "default": "34ccd3dc1987458b9d050532261802"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current weather data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "location": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "region": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "current": {
+                      "type": "object",
+                      "properties": {
+                        "temp_c": {
+                          "type": "number"
+                        },
+                        "condition": {
+                          "type": "object"
+                        },
+                        "wind_kph": {
+                          "type": "number"
+                        },
+                        "humidity": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": null
+}
