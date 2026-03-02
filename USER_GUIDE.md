@@ -81,6 +81,8 @@ See [SETUP.md](SETUP.md) for flow diagrams and a detailed setup guide.
 
 ## Activity Bar View
 
+![WxO Toolkit Panel](resources/wxo-toolkit-Panel.png)
+
 The **WxO Toolkit** section in the Activity Bar shows:
 
 | Item | Description |
@@ -119,6 +121,10 @@ Each resource (agent, tool, flow, connection) has inline action buttons:
 | ⇄ | **Compare** | Diff this resource with the same resource in another environment |
 | 🗑️ | **Delete** | Remove the resource (with confirmation). Multi-select to delete several at once. For tools/flows/plugins, you can optionally remove from all agent assignments first. |
 
+![Edit Tool](resources/wxo-toolkit-EditTool.png)
+
+![Delete Multiple Tools](resources/wxp-toolkit-DeleteMultipleTools.png)
+
 ### Copy options
 
 When you **Copy** a resource:
@@ -134,6 +140,8 @@ When you **Copy** a resource:
 
 ### ↑ Export
 
+![Export Panel](resources/wxo-toolkit-ExportPanel.png)
+
 Pull agents, tools, flows, or connections from Watson Orchestrate to local storage (`WxO/Exports/`).
 
 - **Environment** — Source environment (e.g. TZ1)
@@ -141,6 +149,8 @@ Pull agents, tools, flows, or connections from Watson Orchestrate to local stora
 - **Pick specific objects** — (Optional) Select individual agents, tools, or connections by name. Use **Load from env** to populate checkboxes.
 - **Run Export** — Executes `export_from_wxo.sh` in a new terminal
 - **Latest export report** — Link to open the most recent export report; **Refresh** to rescan
+
+![Export Report](resources/wxo-toolkit-ExportReport.png)
 
 ### ↓ Import
 
@@ -155,6 +165,8 @@ Push from a local export folder into a target environment.
 - **Latest import report** — Link to open the most recent import report; **Refresh** to rescan
 
 ### ⇄ Compare
+
+![System Compare Report](resources/wxo-toolkit-SystemCompareReport.png)
 
 Compare agents, tools, and flows between two environments. Output saved to `WxO/Compare/`.
 
@@ -269,6 +281,9 @@ Configure the extension in **File → Preferences → Settings** (search for "Wx
 
 - **Create Tool** — Python or OpenAPI tools via form. Output to `WxO/Exports/{env}/{datetime}/tools/{name}`.
 - **Create Agent / Flow / Connection** — Inline Create buttons; form with YAML/JSON editor; Save imports via orchestrate CLI.
+
+![Create Connection](resources/wxo-tookkit-CreateConnection.png)
+
 - **Connection form** — Supports API Key, Bearer Token, Basic Auth, OAuth flows; integrates with `orchestrate connections set-credentials` for live connections.
 - **Edit** — Opens form (not raw JSON) for agents, flows, connections, tools, plugins. Tools/plugins export to `WxO/Edits/{name}/` for editing.
 

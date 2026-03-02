@@ -20,6 +20,16 @@ Export, import, compare, and replicate Watson Orchestrate agents, tools, flows, 
 - **Secrets** — Edit connection credentials per environment; `.env_connection_*` files open in form editor
 - **WxO Project Dir** — Tree view with context menus (New File/Folder, Rename, Delete, Reveal, Copy Path, Open in Terminal)
 
+## Screenshots
+
+| Panel & Export | Create Connection | Edit Tool |
+|----------------|-------------------|-----------|
+| ![WxO Toolkit Panel](resources/wxo-toolkit-Panel.png) | ![Create Connection](resources/wxo-tookkit-CreateConnection.png) | ![Edit Tool](resources/wxo-toolkit-EditTool.png) |
+
+| Export | Export Report | Compare | Delete |
+|--------|---------------|---------|--------|
+| ![Export Panel](resources/wxo-toolkit-ExportPanel.png) | ![Export Report](resources/wxo-toolkit-ExportReport.png) | ![System Compare](resources/wxo-toolkit-SystemCompareReport.png) | ![Delete Multiple](resources/wxp-toolkit-DeleteMultipleTools.png) |
+
 ## Usage
 
 1. Open any workspace. The extension bundles the wxo-toolkit-cli scripts.
@@ -60,7 +70,7 @@ cd wxo-toolkit-vsc   # or watsonx-orchestrate-devkit/packages/wxo-toolkit/vscode
 npm run package
 ```
 
-Produces `wxo-toolkit-vsc-1.2.0.vsix` (version from package.json). Install via **Extensions** → "..." → **Install from VSIX**.
+Produces `wxo-toolkit-vsc-1.2.2.vsix` (version from package.json). Install via **Extensions** → "..." → **Install from VSIX**.
 
 See `PUBLISHING.md` for publishing to VS Code Marketplace and Open VSX.
 
