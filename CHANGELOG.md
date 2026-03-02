@@ -2,6 +2,33 @@
 
 All notable changes to the WxO Toolkit VS Code extension ([wxo-toolkit-vsc](https://github.com/markusvankempen/wxo-toolkit-vsc)).
 
+## [1.2.0] - 2026-02-28
+
+### Added
+
+- **Remove tool from agents when deleting** — When deleting a tool, flow, or plugin, you can optionally remove it from all agent assignments first (avoids orphaned references). Available in both the Activity Bar delete and the Danger Zone interactive script. Uses `remove_tool_from_agents.sh` (orchestrate CLI only; requires jq, python3 + PyYAML).
+- **Create Agent / Flow / Connection** — Inline "Create" buttons in the Activity Bar for each category; opens form-based editors to create new resources and import via CLI.
+- **Edit forms** — Edit Agent, Flow, Connection, and Tool now open form views (not raw JSON). Form fields stay synced with the YAML/JSON editor; save pushes changes via orchestrate CLI.
+- **Connection form with auth** — Create/Edit Connection supports API Key, Bearer Token, Basic Auth, and OAuth flows (Client Credentials, Password, Auth Code, On-Behalf-Of, Token Exchange). Integrates with `orchestrate connections set-credentials` for live connections.
+- **Systems Edit button** — "Edit" next to each environment in the Systems tab opens that system's connection credentials file (`.env_connection_{env}`) in the form editor.
+- **Object picker for Export/Import/Replicate** — "Pick specific objects by name" option to select individual agents, tools, or connections instead of exporting/importing a whole category. Use "Load from env" to populate checkboxes from the active environment.
+- **WxO Project Dir context menus** — Right-click on folders and files: New File, New Folder, Rename, Delete, Reveal in Explorer, Copy Path, Open in Terminal. `.env_connection_*` files open in the credential form editor.
+- **Plugin editor** — Dedicated form for editing plugins (agent_pre_invoke/agent_post_invoke). Exports to `WxO/Edits/{name}/`, edit source files, re-import via CLI.
+- **Multi-select for delete** — Shift-click or Ctrl/Cmd-click to select multiple agents, tools, or flows; Delete key removes all selected.
+- **Persistent Edits directory** — Tools and plugins are exported to `WxO/Edits/{name}/` for editing; files persist in the workspace instead of temp folders.
+
+### Changed
+
+- **Edit Tool** — Python and OpenAPI tools now open in the Create Tool form (pre-filled) instead of raw JSON.
+- **Resource Actions** — Edit (open form) replaces inline JSON editing for agents, flows, connections, and tools.
+
+### Fixed
+
+- **Webview JavaScript errors** — Replaced inline `onclick`/`onchange` handlers with `addEventListener` to comply with VS Code webview CSP (`switchTab is not defined`, etc.).
+- **package.json parse error** — Removed JavaScript-style comments from `package.json` (JSON does not support comments).
+
+---
+
 ## [1.1.0] - 2026-02-25
 
 ### Added

@@ -2,22 +2,23 @@
 
 **IBM Watsonx Orchestrate**
 
-*Author: Markus van Kempen · 27 Feb 2026*
+*Author: Markus van Kempen · 28 Feb 2026*
 
 **Repository:** [github.com/markusvankempen/wxo-toolkit-vsc](https://github.com/markusvankempen/wxo-toolkit-vsc)
 
-Export, import, compare, and replicate Watson Orchestrate agents, tools, flows, and connections via the orchestrate CLI from VS Code. Uses wxo-toolkit-cli scripts bundled with the extension. Standalone extension (independent of wxo-builder).
+Export, import, compare, and replicate Watson Orchestrate agents, tools, flows, and connections via the orchestrate CLI from VS Code. Uses the [**WxO-Importer-Export-Comparer-Validator**](https://github.com/markusvankempen/WxO-Importer-Export-Comparer-Validator) CLI scripts (wxo-toolkit-cli) bundled with the extension. Standalone extension (independent of wxo-builder).
 
 ## Features
 
-- **Activity Bar** — Browse agents, tools, flows, connections with display names; inline actions (View JSON, Export, Copy, Edit, Compare, Delete)
-- **Main Panel** — Export, Import, Compare, Replicate, Systems, Secrets, Dependencies, Help
-- **Latest Report links** — Each tab shows a link to the most recent report (export, import, compare, replicate) with Refresh button
-- **Create Tool** — Create Python or OpenAPI tools via form; outputs to `WxO/Exports/{env}/{datetime}/tools/{name}` (matches Export structure)
-- **Import what** — Import all, agents only, tools only, flows only, or connections only
-- **Systems** — Add, activate, remove Watson Orchestrate environments
-- **Secrets** — Edit connection credentials per environment
-- **WxO Project Dir** — Tree view of all subdirectories and files (Exports, Replicate, Compare, Systems)
+- **Activity Bar** — Browse agents, tools, flows, connections, and plugins with display names; inline Create/Edit (form-based), View JSON, Export, Copy, Compare, Delete; multi-select (Shift/Ctrl+click) for bulk delete
+- **Create Agent / Flow / Connection / Tool** — Form-based creation with YAML/JSON editor; Connection form supports API Key, Bearer, Basic Auth, OAuth flows
+- **Edit forms** — Edit opens pre-filled forms (not raw JSON) for agents, flows, connections, and tools; changes sync to YAML/JSON; save pushes via orchestrate CLI
+- **Main Panel** — Export, Import, Compare, Replicate, Validate, Systems, Secrets, Dependencies, Help
+- **Object picker** — Export/Import/Replicate: pick specific agents, tools, or connections by name (checkbox list from env)
+- **Latest Report links** — Each tab shows a link to the most recent report with Refresh button
+- **Systems** — Add, activate, **Edit** (opens credential form), remove Watson Orchestrate environments
+- **Secrets** — Edit connection credentials per environment; `.env_connection_*` files open in form editor
+- **WxO Project Dir** — Tree view with context menus (New File/Folder, Rename, Delete, Reveal, Copy Path, Open in Terminal)
 
 ## Usage
 
@@ -30,6 +31,12 @@ Export, import, compare, and replicate Watson Orchestrate agents, tools, flows, 
 
 - **User Guide** — Run **WxO Toolkit: Open User Guide** from the Command Palette, or open the **Help** tab in the panel.
 - Full guide: `USER_GUIDE.md` in this folder.
+
+## Related
+
+| Repo | Description |
+|------|--------------|
+| [WxO-Importer-Export-Comparer-Validator](https://github.com/markusvankempen/WxO-Importer-Export-Comparer-Validator) | CLI toolkit (shell scripts) — the scripts this extension bundles and runs. Use it standalone for terminal-based Export/Import/Compare. |
 
 ## Install from source
 
@@ -53,7 +60,7 @@ cd wxo-toolkit-vsc   # or watsonx-orchestrate-devkit/packages/wxo-toolkit/vscode
 npm run package
 ```
 
-Produces `wxo-toolkit-vsc-1.0.0.vsix`. Install via **Extensions** → "..." → **Install from VSIX**.
+Produces `wxo-toolkit-vsc-1.2.0.vsix` (version from package.json). Install via **Extensions** → "..." → **Install from VSIX**.
 
 See `PUBLISHING.md` for publishing to VS Code Marketplace and Open VSX.
 

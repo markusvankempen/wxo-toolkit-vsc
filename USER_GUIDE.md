@@ -2,7 +2,7 @@
 
 **VS Code Extension** (wxo-toolkit-vsc) · IBM Watsonx Orchestrate
 
-*Author: Markus van Kempen · 27 Feb 2026*
+*Author: Markus van Kempen · 28 Feb 2026*
 
 Export, import, compare, replicate, and manage Watson Orchestrate (WxO) agents, tools, flows, and connections directly from VS Code.
 
@@ -87,12 +87,15 @@ The **WxO Toolkit** section in the Activity Bar shows:
 |------|-------------|
 | **Open Panel** | Opens the main Export/Import/Compare/Replicate panel |
 | **Environment name** | Current active environment; click to switch |
-| **Agents** | List of agents in the active environment |
-| **Tools** | List of tools (Python, OpenAPI, Flow, etc.); display names shown |
-| **Flows** | List of flow tools; display names shown |
-| **Connections** | Connections, grouped by status: Active/Live, Active/Draft, Not Active |
-| **WxO Project Dir** | Tree of Exports, Replicate, Compare, Systems; expand to browse all subdirectories and files |
+| **Agents** | List of agents; inline Create; Edit opens form |
+| **Tools** | List of tools (Python, OpenAPI, Flow, etc.); inline Create; Edit opens form |
+| **Flows** | List of flow tools; inline Create; Edit opens form |
+| **Connections** | Connections; inline Create; Edit opens form with auth options |
+| **Plugins** | Agent plugins (pre/post-invoke); Edit opens plugin form |
+| **WxO Project Dir** | Tree of Exports, Replicate, Compare, Systems; right-click for New File/Folder, Rename, Delete, Reveal, Copy Path, Open in Terminal |
 | **Extension: WxO Toolkit** | Opens this extension (wxo-toolkit-vsc) in the Extensions panel |
+
+**Multi-select** — Shift-click or Ctrl/Cmd-click to select multiple resources; press **Delete** to remove all selected.
 
 ### View title bar
 
@@ -108,12 +111,13 @@ Each resource (agent, tool, flow, connection) has inline action buttons:
 
 | Icon | Action | Description |
 |------|--------|--------------|
+| + | **Create** | (Category headers) Create new Agent, Flow, Connection, or Tool via form |
 | 📄 | **View JSON** | Opens a read-only view of the resource definition |
 | ↑ | **Export** | Export this resource to a local file (zip or yml). Choose output folder. |
 | 📋 | **Copy** | Copy to another environment. Choose target, dependencies (agents), and overwrite/rename behavior. |
-| ✏️ | **Edit** | Open the JSON definition in the editor for manual editing (use Import to push changes) |
+| ✏️ | **Edit** | Open a form editor (agents, flows, connections, tools) or plugin editor. Form + YAML/JSON tabs; Save pushes via orchestrate CLI. |
 | ⇄ | **Compare** | Diff this resource with the same resource in another environment |
-| 🗑️ | **Delete** | Remove the resource (with confirmation) |
+| 🗑️ | **Delete** | Remove the resource (with confirmation). Multi-select to delete several at once. For tools/flows/plugins, you can optionally remove from all agent assignments first. |
 
 ### Copy options
 
@@ -134,6 +138,7 @@ Pull agents, tools, flows, or connections from Watson Orchestrate to local stora
 
 - **Environment** — Source environment (e.g. TZ1)
 - **What to export** — All, agents only, tools only, flows only, or connections only
+- **Pick specific objects** — (Optional) Select individual agents, tools, or connections by name. Use **Load from env** to populate checkboxes.
 - **Run Export** — Executes `export_from_wxo.sh` in a new terminal
 - **Latest export report** — Link to open the most recent export report; **Refresh** to rescan
 
@@ -144,6 +149,7 @@ Push from a local export folder into a target environment.
 - **Export folder** — Pick folder (or path to a previous export)
 - **Target environment** — Destination (e.g. TZ2)
 - **Import what** — All, agents only, tools only, flows only, or connections only
+- **Pick specific objects** — (Optional) Select individual agents, tools, or connections by name
 - **If exists** — Override or skip existing resources
 - **Run Import** — Executes `import_to_wxo.sh` in a new terminal
 - **Latest import report** — Link to open the most recent import report; **Refresh** to rescan
@@ -162,6 +168,7 @@ Copy resources from source → Replicate folder → target environment.
 
 - **Source / Target** — Environments
 - **What to replicate** — All, agents, tools, or flows
+- **Pick specific objects** — (Optional) Select individual agents or tools by name
 - **Run Replicate** — Exports to Replicate folder; then run Import from that folder to complete
 - **Latest replicate report** — Link to open the most recent replicate report; **Refresh** to rescan
 
@@ -180,6 +187,7 @@ Manage Watson Orchestrate environments registered with the orchestrate CLI.
 
 - **List** — View all environments (name, URL, active status)
 - **Activate** — Switch active environment
+- **Edit** — Open this environment's connection credentials (`.env_connection_{env}`) in the form editor
 - **Remove** — Unregister an environment (does not delete exported data)
 - **Add Environment** — Name, URL, auth type, API key (stored securely; synced to orchestrate)
 - **Copy to .env** — Write stored credentials to workspace `.env`
@@ -257,9 +265,21 @@ Configure the extension in **File → Preferences → Settings** (search for "Wx
 
 ## Additional Resources
 
-### Create Tool (Activity Bar)
+### Create Tool / Agent / Flow / Connection (Activity Bar)
 
-Create Python or OpenAPI tools via form. Tools are saved to `WxO/Exports/{env}/{datetime}/tools/{name}` (same structure as Export). A **Latest export report** link is shown when reports exist.
+- **Create Tool** — Python or OpenAPI tools via form. Output to `WxO/Exports/{env}/{datetime}/tools/{name}`.
+- **Create Agent / Flow / Connection** — Inline Create buttons; form with YAML/JSON editor; Save imports via orchestrate CLI.
+- **Connection form** — Supports API Key, Bearer Token, Basic Auth, OAuth flows; integrates with `orchestrate connections set-credentials` for live connections.
+- **Edit** — Opens form (not raw JSON) for agents, flows, connections, tools, plugins. Tools/plugins export to `WxO/Edits/{name}/` for editing.
+
+### WxO Project Dir context menus
+
+Right-click on folders or files:
+- **New File / New Folder** — Create items in the WxO directory
+- **Rename / Delete** — File operations
+- **Reveal in Explorer / Copy Path** — Navigation
+- **Open in Terminal** — Open terminal at that path
+- **Open / Edit** — `.env_connection_*` files open in the credential form editor
 
 ---
 
