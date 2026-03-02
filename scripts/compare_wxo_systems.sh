@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Script: compare_wxo_systems.sh
-# Version: 1.0.7
+# Version: 1.0.8
 # Author: Markus van Kempen <mvankempen@ca.ibm.com>, <markus.van.kempen@gmail.com>
 # Date: Feb 25, 2026
 #
@@ -22,7 +22,8 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WXO_ROOT="${WXO_ROOT:-$SCRIPT_DIR/WxO}"
-ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/../../.env}"
+ENV_FILE="${ENV_FILE:-$SCRIPT_DIR/../../../.env}"
+[[ ! -f "$ENV_FILE" ]] && ENV_FILE="$SCRIPT_DIR/../../.env"
 [[ ! -f "$ENV_FILE" ]] && ENV_FILE="$SCRIPT_DIR/.env"
 REPORT_FILE=""
 
@@ -33,20 +34,35 @@ AUTO_REPORT=true   # when true, save to WxO/Compare/Sys1->Sys2/datetime/ if -o n
 # --- Parse args ---
 ENV1=""
 ENV2=""
+COMPARE_AGENTS=true
+COMPARE_TOOLS=true
+COMPARE_FLOWS=true
+COMPARE_PLUGINS=true
+COMPARE_CONNECTIONS=true
+AGENT_FILTER=""
+TOOL_FILTER=""
+CONNECTION_FILTER=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -o|--output)   REPORT_FILE="$2"; AUTO_REPORT=false; [[ $# -ge 2 ]] && shift 2 || shift ;;
     --env-file)    ENV_FILE="$2"; [[ $# -ge 2 ]] && shift 2 || shift ;;
+    --agents-only)   COMPARE_TOOLS=false; COMPARE_FLOWS=false; COMPARE_PLUGINS=false; COMPARE_CONNECTIONS=false; shift ;;
+    --tools-only)    COMPARE_AGENTS=false; COMPARE_FLOWS=false; COMPARE_PLUGINS=false; COMPARE_CONNECTIONS=false; shift ;;
+    --flows-only)    COMPARE_AGENTS=false; COMPARE_TOOLS=false; COMPARE_PLUGINS=false; COMPARE_CONNECTIONS=false; shift ;;
+    --plugins-only)  COMPARE_AGENTS=false; COMPARE_TOOLS=false; COMPARE_FLOWS=false; COMPARE_CONNECTIONS=false; shift ;;
+    --connections-only) COMPARE_AGENTS=false; COMPARE_TOOLS=false; COMPARE_FLOWS=false; COMPARE_PLUGINS=false; shift ;;
+    --agent)        AGENT_FILTER="${2:-}"; [[ $# -ge 2 ]] && shift 2 || shift ;;
+    --tool)         TOOL_FILTER="${2:-}";  [[ $# -ge 2 ]] && shift 2 || shift ;;
+    --connection)   CONNECTION_FILTER="${2:-}"; [[ $# -ge 2 ]] && shift 2 || shift ;;
     -v|--version)
-      echo "compare_wxo_systems.sh 1.0.7"
+      echo "compare_wxo_systems.sh 1.0.9"
       exit 0
       ;;
     -h|--help)
       echo "Usage: $0 [ENV1] [ENV2] [OPTIONS]"
-      echo "  WxO Importer/Export/Comparer/Validator — Compare script v1.0.7"
+      echo "  WxO Importer/Export/Comparer/Validator — Compare script v1.0.9"
       echo ""
-      echo ""
-      echo "Compare agents, tools, and flows between two WXO environments."
+      echo "Compare agents, tools, flows, connections, and plugins between two WXO environments."
       echo ""
       echo "Arguments:"
       echo "  ENV1, ENV2   Environment names (from orchestrate env list). If omitted, select interactively."
@@ -54,6 +70,14 @@ while [[ $# -gt 0 ]]; do
       echo "Options:"
       echo "  -o, --output <file>   Write report to file"
       echo "  --env-file <path>      .env for API keys (WXO_API_KEY_<ENV>)"
+      echo "  --agents-only         Compare only agents"
+      echo "  --tools-only         Compare only tools (excl. flows, plugins)"
+      echo "  --flows-only         Compare only flows"
+      echo "  --plugins-only      Compare only plugins (agent_pre/post_invoke)"
+      echo "  --connections-only  Compare only connections"
+      echo "  --agent <names>      Compare only these agent(s); comma-separated"
+      echo "  --tool <names>       Compare only these tool(s); comma-separated"
+      echo "  --connection <ids>  Compare only these connection(s); comma-separated"
       echo "  -h, --help             Show this help"
       echo ""
       exit 0
@@ -103,14 +127,15 @@ _fetch_agents() {
   ' 2>/dev/null | tr '[:upper:]' '[:lower:]' || true
 }
 
-# Fetch tools with kind: output "name|kind" per line
+# Fetch tools with kind: output "name|kind" per line (kind includes "plugin" for agent_pre/post_invoke)
 _fetch_tools() {
   orchestrate tools list -v 2>/dev/null | jq -r '
     (if type == "array" then . else (.tools // .native // .data // .items) end) |
     if type == "array" then . else [] end |
     .[] | select(type == "object") |
     (.name // .id) as $n |
-    (if .binding.python then "python"
+    (if (.binding.python.type // "") | test("agent_pre_invoke|agent_post_invoke") then "plugin"
+     elif .binding.python then "python"
      elif .binding.openapi then "openapi"
      elif .binding.flow then "flow"
      elif .binding.langflow then "langflow"
@@ -118,6 +143,20 @@ _fetch_tools() {
      end) as $k |
     "\($n)|\($k)"
   ' 2>/dev/null || true
+}
+
+# Fetch connection app_ids from active environment (tries live, draft, or flat)
+_fetch_connections() {
+  local raw
+  raw=$(orchestrate connections list -v 2>/dev/null) || true
+  if [[ -z "$raw" ]]; then echo ""; return; fi
+  echo "$raw" | jq -r '
+    (if type == "array" then .
+     elif .live != null or .draft != null then ((.live // []) + (.draft // []))
+     else (.connections // .data // .items // []) end) |
+    if type == "array" then . else [] end |
+    .[] | select(type == "object") | (.app_id // .appId // .id // .name) // empty
+  ' 2>/dev/null | tr '[:upper:]' '[:lower:]' | sort -u || true
 }
 
 # --- Main ---
@@ -185,11 +224,13 @@ main() {
     exit 1
   }
 
-  local agents1 tools1 flows1
+  local agents1 tools1 flows1 plugins1 conns1
   agents1=$(sort -u <<< "$(_fetch_agents)")
   tools1=$(_fetch_tools)
   flows1=$(echo "$tools1" | grep '|flow$' | cut -d'|' -f1 | tr '[:upper:]' '[:lower:]' | sort -u)
-  tools1=$(echo "$tools1" | grep -v '|flow$' | cut -d'|' -f1 | tr '[:upper:]' '[:lower:]' | sort -u)
+  plugins1=$(echo "$tools1" | grep '|plugin$' | cut -d'|' -f1 | tr '[:upper:]' '[:lower:]' | sort -u)
+  tools1=$(echo "$tools1" | grep -vE '\|(flow|plugin)$' | cut -d'|' -f1 | tr '[:upper:]' '[:lower:]' | sort -u)
+  conns1=$(_fetch_connections)
 
   # Activate and fetch from ENV2
   key2=$(_get_api_key "$ENV2")
@@ -199,17 +240,58 @@ main() {
     exit 1
   }
 
-  local agents2 tools2 flows2
+  local agents2 tools2 flows2 plugins2 conns2
   agents2=$(sort -u <<< "$(_fetch_agents)")
   tools2=$(_fetch_tools)
   flows2=$(echo "$tools2" | grep '|flow$' | cut -d'|' -f1 | tr '[:upper:]' '[:lower:]' | sort -u)
-  tools2=$(echo "$tools2" | grep -v '|flow$' | cut -d'|' -f1 | tr '[:upper:]' '[:lower:]' | sort -u)
+  plugins2=$(echo "$tools2" | grep '|plugin$' | cut -d'|' -f1 | tr '[:upper:]' '[:lower:]' | sort -u)
+  tools2=$(echo "$tools2" | grep -vE '\|(flow|plugin)$' | cut -d'|' -f1 | tr '[:upper:]' '[:lower:]' | sort -u)
+  conns2=$(_fetch_connections)
+
+  # Apply filters when --agent, --tool, --connection specified
+  _filter_list() {
+    local list="$1" filter="$2"
+    if [[ -z "$filter" ]]; then echo "$list"; return; fi
+    local result=""
+    while IFS= read -r n; do
+      [[ -z "$n" ]] && continue
+      local lower_n; lower_n=$(echo "$n" | tr '[:upper:]' '[:lower:]')
+      local found=false
+      IFS=',' read -ra parts <<< "$filter"
+      for p in "${parts[@]}"; do
+        p="${p// /}"
+        [[ -z "$p" ]] && continue
+        local lower_p; lower_p=$(echo "$p" | tr '[:upper:]' '[:lower:]')
+        if [[ "$lower_n" == "$lower_p" ]]; then found=true; break; fi
+      done
+      [[ "$found" == true ]] && result+="$n"$'\n'
+    done <<< "$list"
+    echo "$result"
+  }
+  if [[ -n "$AGENT_FILTER" ]]; then
+    agents1=$(_filter_list "$agents1" "$AGENT_FILTER")
+    agents2=$(_filter_list "$agents2" "$AGENT_FILTER")
+  fi
+  if [[ -n "$TOOL_FILTER" ]]; then
+    tools1=$(_filter_list "$tools1" "$TOOL_FILTER")
+    tools2=$(_filter_list "$tools2" "$TOOL_FILTER")
+    flows1=$(_filter_list "$flows1" "$TOOL_FILTER")
+    flows2=$(_filter_list "$flows2" "$TOOL_FILTER")
+    plugins1=$(_filter_list "$plugins1" "$TOOL_FILTER")
+    plugins2=$(_filter_list "$plugins2" "$TOOL_FILTER")
+  fi
+  if [[ -n "$CONNECTION_FILTER" ]]; then
+    conns1=$(_filter_list "$conns1" "$CONNECTION_FILTER")
+    conns2=$(_filter_list "$conns2" "$CONNECTION_FILTER")
+  fi
 
   # Build comparison: all unique names
-  local all_agents all_tools all_flows
+  local all_agents all_tools all_flows all_plugins all_conns
   all_agents=$(sort -u <<< "$(echo -e "${agents1}\n${agents2}")")
   all_tools=$(sort -u <<< "$(echo -e "${tools1}\n${tools2}")")
   all_flows=$(sort -u <<< "$(echo -e "${flows1}\n${flows2}")")
+  all_plugins=$(sort -u <<< "$(echo -e "${plugins1}\n${plugins2}")")
+  all_conns=$(sort -u <<< "$(echo -e "${conns1}\n${conns2}")")
 
   _in_s1() { echo "$1" | grep -qFx "$2" 2>/dev/null; }
   _in_s2() { echo "$1" | grep -qFx "$2" 2>/dev/null; }
@@ -240,9 +322,11 @@ main() {
     REPORT_CONTENT+="  ─────────────────────────────────────────────────────────────────────────"$'\n'
   }
 
-  _append_section "AGENTS" "$all_agents" "$agents1" "$agents2" "$ENV1" "$ENV2"
-  _append_section "TOOLS" "$all_tools" "$tools1" "$tools2" "$ENV1" "$ENV2"
-  _append_section "FLOWS" "$all_flows" "$flows1" "$flows2" "$ENV1" "$ENV2"
+  [[ "$COMPARE_AGENTS" == "true" ]]    && _append_section "AGENTS" "$all_agents" "$agents1" "$agents2" "$ENV1" "$ENV2"
+  [[ "$COMPARE_TOOLS" == "true" ]]     && _append_section "TOOLS" "$all_tools" "$tools1" "$tools2" "$ENV1" "$ENV2"
+  [[ "$COMPARE_FLOWS" == "true" ]]     && _append_section "FLOWS" "$all_flows" "$flows1" "$flows2" "$ENV1" "$ENV2"
+  [[ "$COMPARE_PLUGINS" == "true" ]]   && _append_section "PLUGINS" "$all_plugins" "$plugins1" "$plugins2" "$ENV1" "$ENV2"
+  [[ "$COMPARE_CONNECTIONS" == "true" ]] && _append_section "CONNECTIONS" "$all_conns" "$conns1" "$conns2" "$ENV1" "$ENV2"
 
   REPORT_CONTENT+=$'\n'
   REPORT_CONTENT+="  Legend: ✓ = present  |  - = absent  |  both = in both  |  only X = only in X"$'\n'

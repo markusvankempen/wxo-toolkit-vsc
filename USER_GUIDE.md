@@ -1,4 +1,4 @@
-# WxO Toolkit — User Guide
+# WxO ToolBox — User Guide
 
 **VS Code Extension** (wxo-toolkit-vsc) · IBM Watsonx Orchestrate
 
@@ -37,7 +37,7 @@ Export, import, compare, replicate, and manage Watson Orchestrate (WxO) agents, 
 
 If you install the orchestrate CLI inside a Python virtual environment (e.g. `pip install ibm-watsonx-orchestrate` inside a venv), the extension will not find it by default. Configure the venv path:
 
-1. **Settings** → search `orchestrateVenvPath` or **WxO Toolkit**
+1. **Settings** → search `orchestrateVenvPath` or **WxO ToolBox**
 2. Set **Orchestrate Venv Path** to your venv folder
 
 | Venv location | Setting value |
@@ -71,9 +71,9 @@ See [SETUP.md](SETUP.md) for flow diagrams and a detailed setup guide.
 
 1. **Open your workspace** — Open any folder. The extension bundles the wxo-toolkit-cli scripts. Or set `wxo-toolkit-vsc.scriptsPath` to a custom scripts folder.
 
-2. **Select an environment** — In the Activity Bar, click the **WxO Toolkit** icon (↔), then click **Select Environment** or the environment dropdown to choose a Watson Orchestrate instance (TZ1, TZ2, etc.).
+2. **Select an environment** — In the Activity Bar, click the **WxO ToolBox** icon (↔), then click **Select Environment** or the environment dropdown to choose a Watson Orchestrate instance (TZ1, TZ2, etc.).
 
-3. **Open the panel** — Click **Open Panel** in the tree view, or run **WxO Toolkit: Open Panel** from the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
+3. **Open the panel** — Click **Open Panel** in the tree view, or run **WxO ToolBox: Open Panel** from the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
 
 4. **Browse resources** — Expand Agents, Tools, Flows, or Connections in the Activity Bar to see your resources. Use the inline buttons for quick actions.
 
@@ -81,9 +81,9 @@ See [SETUP.md](SETUP.md) for flow diagrams and a detailed setup guide.
 
 ## Activity Bar View
 
-![WxO Toolkit Panel](resources/wxo-toolkit-Panel.png)
+![WxO ToolBox Panel](resources/wxo-toolkit-Panel.png)
 
-The **WxO Toolkit** section in the Activity Bar shows:
+The **WxO ToolBox** section in the Activity Bar shows:
 
 | Item | Description |
 |------|-------------|
@@ -91,17 +91,26 @@ The **WxO Toolkit** section in the Activity Bar shows:
 | **Environment name** | Current active environment; click to switch |
 | **Agents** | List of agents; inline Create; Edit opens form |
 | **Tools** | List of tools (Python, OpenAPI, Flow, etc.); inline Create; Edit opens form |
+| **Toolkits** | MCP servers (e.g. `wxo-coingecko-demo`) with nested tools (e.g. `get_global`); separate from regular Tools |
 | **Flows** | List of flow tools; inline Create; Edit opens form |
 | **Connections** | Connections; inline Create; Edit opens form with auth options |
 | **Plugins** | Agent plugins (pre/post-invoke); Edit opens plugin form |
 | **WxO Project Dir** | Tree of Exports, Replicate, Compare, Systems; right-click for New File/Folder, Rename, Delete, Reveal, Copy Path, Open in Terminal |
-| **Extension: WxO Toolkit** | Opens this extension (wxo-toolkit-vsc) in the Extensions panel |
+| **Extension: WxO ToolBox** | Opens this extension (wxo-toolkit-vsc) in the Extensions panel |
 
 **Multi-select** — Shift-click or Ctrl/Cmd-click to select multiple resources; press **Delete** to remove all selected.
+
+### Search and filter
+
+- **Search Resources** (search icon) — Opens a searchable Quick Pick across all agents, tools, toolkit tools, flows, plugins, and connections. Type to filter; select to open the JSON definition.
+- **Filter Resources** (filter icon) — Enter a term to filter the tree by name. Matching items only appear when you expand each category.
+- **Clear Filter** (clear icon) — Shown when a filter is active; clears the filter and restores the full tree.
 
 ### View title bar
 
 - **Select Environment** — Choose a Watson Orchestrate instance
+- **Search** — Search all resources (Quick Pick)
+- **Filter** — Filter tree by name
 - **Refresh** — Reload the tree
 - **Open Panel** — Open the main webview panel
 
@@ -204,6 +213,15 @@ Manage Watson Orchestrate environments registered with the orchestrate CLI.
 - **Add Environment** — Name, URL, auth type, API key (stored securely; synced to orchestrate)
 - **Copy to .env** — Write stored credentials to workspace `.env`
 
+### 📊 Observability
+
+Search and export traces from Watson Orchestrate (ADK 2.5.0+). Requires watsonx Orchestrate SaaS or Developer Edition with `--with-ibm-telemetry`.
+
+- **Environment** — Target environment (e.g. TZ1)
+- **Search traces** — Start/end time (ISO 8601, e.g. `2025-02-27T00:00:00Z`), optional agent name, limit (1–1000). Uses `orchestrate observability traces search`. Output shown in the output panel.
+- **Export trace** — Paste a 32-character trace ID (from search results or the UI), optional output file path. Uses `orchestrate observability traces export`. Exports to `WxO/Observability/{env}/` by default.
+- **Last export** — Link to open the most recent trace export JSON
+
 ### 🔑 Secrets
 
 Edit connection secrets per environment. Stored in `WxO/Systems/{env}/Connections/.env_connection_{env}`.
@@ -269,7 +287,7 @@ Configure the extension in **File → Preferences → Settings** (search for "Wx
 
 1. Enable debug mode: **Settings** → search `wxo-toolkit-vsc.debugPanel` → check it
 2. Open the panel again (e.g. via Activity Bar → Open Panel)
-3. The extension writes `.vscode/wxo-panel-debug.html` in your workspace and logs to the **Output** channel (View → Output → select "WxO Toolkit")
+3. The extension writes `.vscode/wxo-panel-debug.html` in your workspace and logs to the **Output** channel (View → Output → select "WxO ToolBox")
 4. Open `.vscode/wxo-panel-debug.html` in Chrome or Edge, press **F12** → **Console** tab to see the exact error and line number
 5. Share the error message or stack trace when reporting issues
 

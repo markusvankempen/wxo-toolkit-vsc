@@ -1,8 +1,8 @@
-# WxO Toolkit — Setup Guide
+# WxO ToolBox — Setup Guide
 
 **IBM Watsonx Orchestrate (WxO)** · VS Code Extension
 
-This guide walks you through configuring the WxO Toolkit extension with a **single, simple flow**: configure in the extension first, then optionally copy to orchestrate or `.env`.
+This guide walks you through configuring the WxO ToolBox extension with a **single, simple flow**: configure in the extension first, then optionally copy to orchestrate or `.env`.
 
 ---
 
@@ -51,7 +51,7 @@ flowchart TB
 
 ### 2. Add Your First Environment (Extension UI)
 
-1. Open **WxO Toolkit** in the Activity Bar.
+1. Open **WxO ToolBox** in the Activity Bar.
 2. Click **Open Panel**.
 3. Go to the **⊕ Systems** tab.
 4. Fill in **Add Environment**:
