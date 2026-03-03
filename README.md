@@ -1,5 +1,11 @@
 # WxO ToolBox — VS Code Extension (wxo-toolkit-vsc)
 
+> [!WARNING]
+> This repository is **DEPRECATED** and no longer maintained.
+> Please use the new dedicated standalone repository instead:
+> 👉 **WxO-ToolBox-vsc** 👈
+> https://github.com/markusvankempen/WxO-ToolBox-vsc.git
+
 **IBM Watsonx Orchestrate**
 
 *Author: Markus van Kempen · 28 Feb 2026*
